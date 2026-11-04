@@ -7,6 +7,30 @@
 	if (!ghost || !ghost.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 		return;
 	}
+	// 이 스크립트는 화면이 그려진 뒤에 늦게 도착할 수 있다(새 버전을 처음 받거나 서버가 막 떠서 느릴 때).
+	// 그동안 CSS 쪽 움직임(로고 미끄러짐, 출발 알약 흐려지기, 탭 나타나기)은 이미 흘렀으므로,
+	// CSS 로고 움직임이 흐른 시간만큼 JS 움직임도 앞당겨 박자를 맞춘다
+	const brandMotion = (bar.querySelector('.brand')?.getAnimations() || [])[0];
+	const late = brandMotion ? Math.max(0, Number(brandMotion.currentTime) || 0) : 0;
+	if (late > 200) {
+		// 너무 늦었으면 JS 움직임은 건너뛰고 끝난 모습으로 바로 맞춘다(출발 알약을 치우고 도착할 알약을 보인다)
+		ghost.remove();
+		for (const el of bar.querySelectorAll('nav a[aria-current], .lang-switch')) {
+			el.style.animation = 'none';
+		}
+		return;
+	}
+	const played = [];
+	const play = (el, keyframes, options) => {
+		const motion = el.animate(keyframes, options);
+		played.push(motion);
+		return motion;
+	};
+	const catchUp = () => {
+		for (const motion of played) {
+			motion.currentTime = late;
+		}
+	};
 	// 로고 옆 앱 이름: 이전 화면의 이름(data-brand-from)에서 새 이름으로 바꾼다.
 	// 두 이름에 같이 있는 앞 단어(예: "CCTV ")는 그대로 두고, 그 뒤에서 같이 있는 가장 긴 글자 묶음(예: "동의")은
 	// 이전 자리에서 새 자리로 미끄러진다. 나머지 글자만 흐려지거나 떠오른다(예: "촬영 " → "서 관리")
@@ -52,8 +76,8 @@
 			old.style.color = color;
 			name.append(rest, old);
 			old.style.left = (rest.getBoundingClientRect().left - name.getBoundingClientRect().left) + 'px';
-			old.animate([{ opacity: 1 }, { opacity: 0 }], fadeOut).finished.then(() => old.remove(), () => old.remove());
-			rest.animate([{ opacity: 0 }, { opacity: 1 }], fadeIn);
+			play(old, [{ opacity: 1 }, { opacity: 0 }], fadeOut).finished.then(() => old.remove(), () => old.remove());
+			play(rest, [{ opacity: 0 }, { opacity: 1 }], fadeIn);
 		}
 		else {
 			// 새 이름 = 앞 단어 + 새로 생길 앞글자 + 같이 있는 묶음 + 새로 생길 뒷글자
@@ -71,11 +95,11 @@
 			gone[1].style.left = (kb.left - nb.left + dx + kb.width) + 'px';
 			for (const el of gone) {
 				el.style.color = color;
-				el.animate([{ opacity: 1 }, { opacity: 0 }], fadeOut).finished.then(() => el.remove(), () => el.remove());
+				play(el, [{ opacity: 1 }, { opacity: 0 }], fadeOut).finished.then(() => el.remove(), () => el.remove());
 			}
-			kept.animate([{ transform: 'translateX(' + dx + 'px)' }, { transform: 'none' }], { duration: 500, easing: 'cubic-bezier(0.3, 0.6, 0.3, 1)' });
-			before.animate([{ opacity: 0 }, { opacity: 1 }], fadeIn);
-			after.animate([{ opacity: 0 }, { opacity: 1 }], fadeIn);
+			play(kept, [{ transform: 'translateX(' + dx + 'px)' }, { transform: 'none' }], { duration: 500, easing: 'cubic-bezier(0.3, 0.6, 0.3, 1)' });
+			play(before, [{ opacity: 0 }, { opacity: 1 }], fadeIn);
+			play(after, [{ opacity: 0 }, { opacity: 1 }], fadeIn);
 		}
 	}
 
@@ -83,6 +107,7 @@
 	const from = ghost.querySelector(toAdmin ? '.ghost-pill' : '.ghost-tab.current');
 	const to = bar.querySelector(toAdmin ? 'nav a[aria-current]' : '.lang-switch');
 	if (!from || !to) {
+		catchUp();
 		return;
 	}
 	// 로고(CSS의 brand-shift)와 같은 시간, 같은 가감속으로 움직여야 함께 움직이는 것처럼 보인다
@@ -124,14 +149,14 @@
 	ghost.appendChild(flight);
 	from.style.visibility = 'hidden';
 
-	const move = flight.animate([
+	const move = play(flight, [
 		{ ...box(a), backgroundColor: start.backgroundColor, borderColor: border(start) },
 		{ ...box(b), backgroundColor: end.backgroundColor, borderColor: border(end) }
 	], { duration, easing, fill: 'forwards' });
-	fromLabel.animate([{ opacity: 1 }, { opacity: 0, offset: 0.45 }, { opacity: 0 }], { duration, fill: 'forwards' });
-	toLabel.animate([{ opacity: 0 }, { opacity: 0, offset: 0.35 }, { opacity: 1, offset: 0.8 }, { opacity: 1 }], { duration, fill: 'forwards' });
+	play(fromLabel, [{ opacity: 1 }, { opacity: 0, offset: 0.45 }, { opacity: 0 }], { duration, fill: 'forwards' });
+	play(toLabel, [{ opacity: 0 }, { opacity: 0, offset: 0.35 }, { opacity: 1, offset: 0.8 }, { opacity: 1 }], { duration, fill: 'forwards' });
 	// 도착한 자리의 진짜 알약은 날아온 알약과 똑같으므로, 도착하는 순간 바로 바꾼다
-	to.animate([{ opacity: 0 }, { opacity: 0 }], { duration, fill: 'backwards' });
+	play(to, [{ opacity: 0 }, { opacity: 0 }], { duration, fill: 'backwards' });
 	move.finished.then(() => flight.remove(), () => flight.remove());
 
 	// 알약이 지나가는 길의 탭: 로그인이면 알약이 지나간 뒤 오른쪽 탭부터 나타나고,
@@ -148,14 +173,16 @@
 		const along = Math.min(1, Math.max(0, (x - fromX) / (toX - fromX)));
 		el.style.animation = 'none';
 		if (toAdmin) {
-			el.animate([{ opacity: 0, transform: 'translateX(8px)' }, { opacity: 1, transform: 'none' }], {
+			play(el, [{ opacity: 0, transform: 'translateX(8px)' }, { opacity: 1, transform: 'none' }], {
 				duration: 260, delay: 120 + along * duration * 0.6, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'backwards'
 			});
 		}
 		else {
-			el.animate([{ opacity: 1 }, { opacity: 0 }], {
+			play(el, [{ opacity: 1 }, { opacity: 0 }], {
 				duration: 160, delay: Math.max(0, along * duration * 0.5 - 120), easing: 'ease-out', fill: 'forwards'
 			});
 		}
 	}
+
+	catchUp();
 })();
