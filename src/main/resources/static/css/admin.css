@@ -316,7 +316,7 @@ img.brand-mark {
 
 @media (prefers-reduced-motion: no-preference) {
 	.topbar.signed-in .brand {
-		animation: brand-shift 500ms cubic-bezier(0.4, 0, 0.2, 1) both;
+		animation: brand-shift 500ms cubic-bezier(0.3, 0.6, 0.3, 1) both;
 	}
 
 	/* 도착할 탭은 알약이 날아오는 동안 숨겨 둔다(스크립트가 없으면 0.5초 뒤 그냥 나타난다) */

@@ -15,7 +15,7 @@
 	}
 	// 로고(CSS의 brand-shift)와 같은 시간, 같은 가감속으로 움직여야 함께 움직이는 것처럼 보인다
 	const duration = 500;
-	const easing = 'cubic-bezier(0.4, 0, 0.2, 1)';
+	const easing = 'cubic-bezier(0.3, 0.6, 0.3, 1)';
 	const base = ghost.getBoundingClientRect();
 	const a = from.getBoundingClientRect();
 	const b = to.getBoundingClientRect();
