@@ -721,8 +721,11 @@ body.landing {
 }
 
 .lang-card legend {
+	/* legend는 글자 폭만큼만 차지하므로 카드 폭으로 늘린 뒤 가운데 맞춘다 */
+	width: 100%;
 	padding: 0;
 	margin-bottom: 14px;
+	text-align: center;
 	font-size: 15px;
 	font-weight: 700;
 }
