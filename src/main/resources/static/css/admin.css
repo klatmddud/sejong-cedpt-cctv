@@ -292,7 +292,11 @@ img.brand-mark {
 	white-space: nowrap;
 }
 
-/* topbar-motion.js가 겹쳐 두는 이전 화면의 앱 이름 */
+/* topbar-motion.js가 바꾸는 앱 이름 뒷부분과, 그 위에 겹쳐 두는 이전 화면의 뒷부분 */
+.brand-name-rest {
+	position: relative;
+}
+
 .brand-name-prev {
 	position: absolute;
 	top: 0;

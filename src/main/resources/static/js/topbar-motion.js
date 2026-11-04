@@ -10,18 +10,29 @@
 	// 로고 옆 앱 이름: 이전 화면의 이름(data-brand-from)을 겹쳐 두고, 로그인 화면에서 언어를 바꿀 때처럼 서로 흐려지며 바꾼다
 	const name = bar.querySelector('.brand-name');
 	const prev = ghost.dataset.brandFrom;
-	if (name && prev && prev !== name.textContent.trim()) {
+	const now = name ? name.textContent.trim() : '';
+	if (name && prev && prev !== now) {
+		// 두 이름에 같이 있는 앞 단어(예: "CCTV ")는 그대로 두고 뒷부분만 바꾼다
+		let same = 0;
+		while (same < prev.length && same < now.length && prev[same] === now[same]) {
+			same++;
+		}
+		const cut = now.slice(0, same).lastIndexOf(' ') + 1;
+		const rest = document.createElement('span');
+		rest.className = 'brand-name-rest';
+		rest.textContent = now.slice(cut);
+		name.textContent = now.slice(0, cut);
+		name.appendChild(rest);
 		const color = getComputedStyle(name).color;
 		const old = document.createElement('span');
 		old.className = 'brand-name-prev';
-		old.textContent = prev;
+		old.textContent = prev.slice(cut);
 		old.style.color = color;
-		name.style.position = 'relative';
-		name.appendChild(old);
+		rest.appendChild(old);
 		const fade = { duration: 350, easing: 'ease-in-out', fill: 'both' };
 		old.animate([{ opacity: 1 }, { opacity: 0 }], fade).finished.then(() => old.remove(), () => old.remove());
-		// 새 이름은 글자색으로 떠오르게 한다(겹쳐 둔 이전 이름은 자기 색을 따로 가져 영향이 없다)
-		name.animate([{ color: 'transparent' }, { color }], fade);
+		// 새 뒷부분은 글자색으로 떠오르게 한다(겹쳐 둔 이전 뒷부분은 자기 색을 따로 가져 영향이 없다)
+		rest.animate([{ color: 'transparent' }, { color }], fade);
 	}
 
 	const toAdmin = bar.classList.contains('signed-in');
