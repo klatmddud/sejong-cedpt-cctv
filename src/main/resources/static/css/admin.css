@@ -292,13 +292,36 @@ img.brand-mark {
 	white-space: nowrap;
 }
 
+/* topbar-motion.js가 만드는 날아가는 알약. 출발·도착 알약의 글자를 겹쳐 담는다 */
+.topbar-flight {
+	position: absolute;
+	box-sizing: border-box;
+	overflow: hidden;
+	border: 1px solid transparent;
+	border-radius: 999px;
+}
+
+.topbar-flight-label {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
+}
+
 .topbar.signed-in {
 	--brand-from: calc(max(0px, (100vw - 1072px) / 2) + 16px - max(0px, (100vw - 1200px) / 2) - 24px);
 }
 
 @media (prefers-reduced-motion: no-preference) {
 	.topbar.signed-in .brand {
-		animation: brand-shift 450ms var(--ease-out) both;
+		animation: brand-shift 500ms cubic-bezier(0.4, 0, 0.2, 1) both;
+	}
+
+	/* 도착할 탭은 알약이 날아오는 동안 숨겨 둔다(스크립트가 없으면 0.5초 뒤 그냥 나타난다) */
+	.topbar.signed-in nav > a[aria-current] {
+		animation: hold-hidden 500ms step-end both;
 	}
 
 	.topbar.signed-in nav > :not([aria-current]) {
@@ -335,6 +358,12 @@ img.brand-mark {
 @keyframes brand-shift {
 	from {
 		transform: translateX(var(--brand-from));
+	}
+}
+
+@keyframes hold-hidden {
+	from {
+		opacity: 0;
 	}
 }
 
