@@ -193,6 +193,29 @@ img.brand-mark {
 	outline-color: #fff;
 }
 
+/* 로그인 직후 한 번(flash 속성 signedIn): 로그인 화면에서 오른쪽 끝에 있던 언어 버튼이
+   계정 메뉴 자리(폭 64px + 간격 4px)만큼 왼쪽으로 밀려나고, 그 자리에 계정 메뉴가 나타난다 */
+.topbar.signed-in .lang-switch {
+	animation: make-room 450ms var(--ease-out) both;
+}
+
+.topbar.signed-in .account {
+	animation: account-in 320ms 160ms var(--ease-out) both;
+}
+
+@keyframes make-room {
+	from {
+		transform: translateX(68px);
+	}
+}
+
+@keyframes account-in {
+	from {
+		opacity: 0;
+		transform: translateX(12px) scale(0.85);
+	}
+}
+
 .lang-switch {
 	display: flex;
 	align-items: center;

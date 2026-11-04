@@ -106,8 +106,23 @@ class SecurityConfig {
 	/**
 	 * 관리자는 /admin, 학생은 /consents로 보낸다. 요청했던 주소로 돌려보내지 않는다(외부 주소로 보내는 것 방지).
 	 * SimpleUrlAuthenticationSuccessHandler를 써야 세션에 남은 이전 로그인 실패 사유도 지워진다.
+	 * 학생은 flash 속성(signedIn)을 넘겨, 로그인 직후 한 번만 상단 바에 계정 메뉴가 나타나는 움직임을 보여 준다.
 	 */
 	private static final class RoleTargetSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+		private final FlashMapManager flashMaps = new SessionFlashMapManager();
+
+		@Override
+		public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+				Authentication authentication) throws IOException, ServletException {
+			if (!isAdmin(authentication)) {
+				FlashMap flash = new FlashMap();
+				flash.put("signedIn", true);
+				flash.setTargetRequestPath(request.getContextPath() + "/consents");
+				flashMaps.saveOutputFlashMap(flash, request, response);
+			}
+			super.onAuthenticationSuccess(request, response, authentication);
+		}
 
 		@Override
 		protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response,

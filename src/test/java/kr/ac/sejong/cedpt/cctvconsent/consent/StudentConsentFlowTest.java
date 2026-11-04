@@ -110,6 +110,21 @@ class StudentConsentFlowTest extends PostgresTestSupport {
 	}
 
 	@Test
+	void accountMenuSlidesInOnlyRightAfterLogin() throws Exception {
+		when(authenticator.authenticate(STUDENT, "pw"))
+				.thenReturn(new StudentLogin(new SejongStudent(STUDENT, "홍길동"), TERM, List.of()));
+		MockHttpSession session = (MockHttpSession) mvc.perform(formLogin("/login").user(STUDENT).password("pw"))
+				.andExpect(redirectedUrl("/consents"))
+				.andReturn().getRequest().getSession(false);
+		assertThat(session).isNotNull();
+		mvc.perform(get("/consents").session(session))
+				.andExpect(content().string(Matchers.containsString("class=\"topbar signed-in\"")));
+		// 새로고침하면 다시 움직이지 않는다
+		mvc.perform(get("/consents").session(session))
+				.andExpect(content().string(Matchers.containsString("class=\"topbar\"")));
+	}
+
+	@Test
 	void loginAddsSjptCoursesInTargetRooms() throws Exception {
 		when(authenticator.authenticate(STUDENT, "pw")).thenReturn(new StudentLogin(new SejongStudent(STUDENT, "홍길동"),
 				TERM, List.of(
