@@ -135,6 +135,7 @@ class SecurityConfig {
 	/**
 	 * 로그아웃 뒤 /login으로 보내고, 안내("로그아웃했습니다")는 flash 속성(loggedOut)으로 넘겨 한 번만 보여 준다.
 	 * 주소(/login?logout)로 넘기면 새로고침할 때마다 안내가 다시 뜬다. 세션은 이미 무효화되어 flash용 새 세션이 생긴다.
+	 * 학생이면 studentLoggedOut도 넘겨, 언어 버튼이 계정 메뉴가 있던 자리로 돌아가는 움직임을 한 번 보여 준다.
 	 */
 	private static final class LoggedOutNoticeHandler extends SimpleUrlLogoutSuccessHandler {
 
@@ -150,6 +151,9 @@ class SecurityConfig {
 				Authentication authentication) throws IOException, ServletException {
 			FlashMap flash = new FlashMap();
 			flash.put("loggedOut", true);
+			if (authentication != null && !isAdmin(authentication)) {
+				flash.put("studentLoggedOut", true);
+			}
 			flash.setTargetRequestPath(request.getContextPath() + "/login");
 			flashMaps.saveOutputFlashMap(flash, request, response);
 			super.onLogoutSuccess(request, response, authentication);

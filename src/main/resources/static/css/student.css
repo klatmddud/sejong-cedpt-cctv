@@ -203,9 +203,20 @@ img.brand-mark {
 	animation: account-in 320ms 160ms var(--ease-out) both;
 }
 
+/* 학생이 로그아웃한 직후 한 번(flash 속성 studentLoggedOut): 언어 버튼이 계정 메뉴가 있던 오른쪽 끝으로 돌아간다 */
+.topbar.signed-out .lang-switch {
+	animation: give-back-room 450ms var(--ease-out) both;
+}
+
 @keyframes make-room {
 	from {
 		transform: translateX(68px);
+	}
+}
+
+@keyframes give-back-room {
+	from {
+		transform: translateX(-68px);
 	}
 }
 

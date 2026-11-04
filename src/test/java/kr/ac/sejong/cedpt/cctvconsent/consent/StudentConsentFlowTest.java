@@ -539,10 +539,25 @@ class StudentConsentFlowTest extends PostgresTestSupport {
 				.andReturn().getRequest().getSession(false);
 		assertThat(session).isNotNull();
 		mvc.perform(get("/login").session(session))
-				.andExpect(content().string(Matchers.containsString("로그아웃했습니다.")));
-		// 새로고침하면 안내가 다시 뜨지 않는다
+				.andExpect(content().string(Matchers.containsString("로그아웃했습니다.")))
+				.andExpect(content().string(Matchers.containsString("class=\"topbar signed-out\"")));
+		// 새로고침하면 안내가 다시 뜨지 않고 언어 버튼도 움직이지 않는다
 		mvc.perform(get("/login").session(session))
-				.andExpect(content().string(Matchers.not(Matchers.containsString("로그아웃했습니다."))));
+				.andExpect(content().string(Matchers.not(Matchers.containsString("로그아웃했습니다."))))
+				.andExpect(content().string(Matchers.containsString("class=\"topbar\"")));
+	}
+
+	@Test
+	void adminLogoutDoesNotSlideLanguageButton() throws Exception {
+		// 관리자 상단 바에는 언어 버튼이 없었으므로 로그인 화면에서 움직이지 않는다
+		org.springframework.mock.web.MockHttpSession session = (org.springframework.mock.web.MockHttpSession) mvc
+				.perform(post("/logout").with(csrf()).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN")))
+				.andExpect(redirectedUrl("/login"))
+				.andReturn().getRequest().getSession(false);
+		assertThat(session).isNotNull();
+		mvc.perform(get("/login").session(session))
+				.andExpect(content().string(Matchers.containsString("로그아웃했습니다.")))
+				.andExpect(content().string(Matchers.containsString("class=\"topbar\"")));
 	}
 
 	@Test

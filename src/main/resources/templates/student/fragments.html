@@ -26,7 +26,7 @@
 </a>
 
 <!--/* 상단 바. student가 없으면(로그인 화면) 계정 메뉴 없이 언어 바꾸기만 둔다 */-->
-<header th:fragment="nav(student)" class="topbar" th:classappend="${signedIn} ? 'signed-in'">
+<header th:fragment="nav(student)" class="topbar" th:classappend="${signedIn} ? 'signed-in' : (${studentLoggedOut} ? 'signed-out')">
 	<div class="topbar-inner">
 		<a class="brand" th:href="${student != null} ? @{/consents} : @{/}">
 			<img th:replace="~{student/fragments :: brandMark('logo-white.svg')}">
