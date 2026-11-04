@@ -19,3 +19,29 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+Excluded from this license
+
+The MIT License above applies to the source code only. It does not grant any
+right to use the following:
+
+- The service logo and tab icons in src/main/resources/static/img/
+  (logo.svg, logo-white.svg, favicon.svg).
+- The name, emblem, and other marks of Sejong University.
+
+Anyone who uses, modifies, or distributes this software must not use the logo
+or the marks above, and must not present their copy as operated or endorsed by
+Sejong University or by this service.
+
+이 라이선스에서 제외되는 것
+
+위 MIT 라이선스는 소스 코드에만 적용되며, 다음을 사용할 권리는 주지 않습니다.
+
+- src/main/resources/static/img/의 서비스 로고와 탭 아이콘
+  (logo.svg, logo-white.svg, favicon.svg)
+- 세종대학교의 이름, 표장, 그 밖의 표지
+
+이 소프트웨어를 사용하거나 수정해 배포할 때 위 로고와 표지를 사용해서는 안 되며,
+세종대학교나 이 서비스가 공식적으로 운영하거나 보증하는 것처럼 보이게 해서도 안 됩니다.
