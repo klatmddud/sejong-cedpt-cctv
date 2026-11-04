@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -141,7 +142,7 @@ class SecurityConfig {
 	private static final class LoggedOutNoticeHandler extends SimpleUrlLogoutSuccessHandler {
 
 		/** admin/fragments.html 상단 바 탭의 active 값. 그 밖의 값은 받지 않는다 */
-		private static final java.util.Set<String> ADMIN_TABS = java.util.Set.of("dashboard", "roster", "login-locks");
+		private static final Set<String> ADMIN_TABS = Set.of("dashboard", "roster", "login-locks");
 
 		private final FlashMapManager flashMaps = new SessionFlashMapManager();
 

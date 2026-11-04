@@ -117,6 +117,9 @@ h1, h2, h3, p {
 	background: var(--accent);
 	border-bottom: 1px solid var(--accent-dark);
 	color: #fff;
+	/* 관리자 로그아웃 직후 로고 출발 자리(--brand-from)의 이 화면 쪽 값을 스크롤바를 뺀 실제 바 폭(cqw)으로 계산한다.
+	   정확한 값은 topbar-motion.js가 이전 화면에서 적어 둔 로고 위치로 다시 맞춘다 */
+	container-type: inline-size;
 }
 
 .topbar-inner {
@@ -293,7 +296,7 @@ img.brand-mark {
 }
 
 .topbar.admin-signed-out {
-	--brand-from: calc(max(0px, (100vw - 1200px) / 2) + 24px - max(0px, (100vw - 1072px) / 2) - 16px);
+	--brand-from: calc(max(0px, (100vw - 1200px) / 2) + 24px - max(0px, (100cqw - 1072px) / 2) - 16px);
 }
 
 @media (max-width: 640px) {

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -533,7 +534,7 @@ class StudentConsentFlowTest extends PostgresTestSupport {
 
 	@Test
 	void logoutNoticeShowsOnlyOnce() throws Exception {
-		org.springframework.mock.web.MockHttpSession session = (org.springframework.mock.web.MockHttpSession) mvc
+		MockHttpSession session = (MockHttpSession) mvc
 				.perform(post("/logout").with(csrf()).with(student(STUDENT)))
 				.andExpect(redirectedUrl("/login"))
 				.andReturn().getRequest().getSession(false);
@@ -550,9 +551,9 @@ class StudentConsentFlowTest extends PostgresTestSupport {
 	@Test
 	void adminLogoutHandsTabPillBackToLanguageButton() throws Exception {
 		// 관리자가 명부 업로드 화면에서 로그아웃하면, 로그인 화면에 그 탭 알약을 출발 자리로 한 번 그려 둔다
-		org.springframework.mock.web.MockHttpSession session = (org.springframework.mock.web.MockHttpSession) mvc
+		MockHttpSession session = (MockHttpSession) mvc
 				.perform(post("/logout").param("from", "roster").with(csrf())
-						.with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN")))
+						.with(user("admin").roles("ADMIN")))
 				.andExpect(redirectedUrl("/login"))
 				.andReturn().getRequest().getSession(false);
 		assertThat(session).isNotNull();
@@ -567,10 +568,12 @@ class StudentConsentFlowTest extends PostgresTestSupport {
 
 	@Test
 	void adminLogoutIgnoresUnknownTab() throws Exception {
-		org.springframework.mock.web.MockHttpSession session = (org.springframework.mock.web.MockHttpSession) mvc
+		MockHttpSession session = (MockHttpSession) mvc
 				.perform(post("/logout").param("from", "<script>").with(csrf())
-						.with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN")))
+						.with(user("admin").roles("ADMIN")))
+				.andExpect(redirectedUrl("/login"))
 				.andReturn().getRequest().getSession(false);
+		assertThat(session).isNotNull();
 		mvc.perform(get("/login").session(session))
 				.andExpect(content().string(Matchers.containsString("class=\"topbar admin-signed-out\"")))
 				.andExpect(content().string(Matchers.not(Matchers.containsString("ghost-tab current"))));

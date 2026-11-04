@@ -141,6 +141,9 @@ h3 {
 	border-bottom: 1px solid var(--accent-dark);
 	background: var(--accent);
 	color: #fff;
+	/* 로그인 직후 로고 출발 자리(--brand-from)의 이 화면 쪽 값을 스크롤바를 뺀 실제 바 폭(cqw)으로 계산한다.
+	   정확한 값은 topbar-motion.js가 이전 화면에서 적어 둔 로고 위치로 다시 맞춘다 */
+	container-type: inline-size;
 }
 
 .topbar :focus-visible {
@@ -324,7 +327,7 @@ img.brand-mark {
 }
 
 .topbar.signed-in {
-	--brand-from: calc(max(0px, (100vw - 1072px) / 2) + 16px - max(0px, (100vw - 1200px) / 2) - 24px);
+	--brand-from: calc(max(0px, (100vw - 1072px) / 2) + 16px - max(0px, (100cqw - 1200px) / 2) - 24px);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -404,9 +407,10 @@ img.brand-mark {
 }
 
 /* 화면이 열릴 때 본문(제목, 알림, 카드)이 위에서부터 차례로 살짝 떠오른다. 상단 바는 움직이지 않는다.
-   탭을 자주 오가는 업무 화면이라 학생 화면(0.5초, 10px)보다 짧게 하고, 늦어도 0.15초 안에 모두 시작한다 */
+   탭을 자주 오가는 업무 화면이라 학생 화면(0.5초, 10px)보다 짧게 하고, 늦어도 0.15초 안에 모두 시작한다.
+   끝난 뒤에는 transform이 남아 카드마다 쌓임 맥락이 생기지 않도록 시작 전 상태만 채운다(backwards) */
 .page > :not(dialog) {
-	animation: page-rise 300ms var(--ease-out) both;
+	animation: page-rise 300ms var(--ease-out) backwards;
 }
 
 .page > :not(dialog):nth-child(2) {

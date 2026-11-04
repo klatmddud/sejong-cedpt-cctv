@@ -2,10 +2,40 @@
 // 로그인이면 언어 버튼 알약이 지금 보고 있는 탭 표시가 되고, 로그아웃이면 그 탭 알약이 언어 버튼이 된다.
 // 출발 자리는 서버가 .topbar-ghost에 이전 화면의 배치로 그려 둔다. 이 스크립트가 없으면 CSS만으로 제자리에서 흐려진다.
 (() => {
+	// 로고가 이전 화면 어디에 있었는지 남겨 둔다. 로고 출발 자리는 CSS(--brand-from)가 화면 폭으로 어림하지만,
+	// 이전 화면에만 스크롤바가 있었으면 그 폭의 절반만큼 어긋나므로 다음 화면에서 이 값으로 다시 맞춘다
+	const KEY = 'cctv-topbar-brand';
+	const brandLeft = (brand) => {
+		// 움직이는 중에도 원래 자리를 재도록 transform을 뺀 레이아웃 위치(offsetLeft)를 쓴다
+		const parent = brand.offsetParent;
+		return brand.offsetLeft + (parent ? parent.getBoundingClientRect().left : 0);
+	};
+	addEventListener('pagehide', () => {
+		const brand = document.querySelector('.topbar .brand');
+		try {
+			if (brand) {
+				sessionStorage.setItem(KEY, JSON.stringify({ x: brandLeft(brand), at: Date.now() }));
+			}
+		}
+		catch (e) {
+			// 저장소를 못 쓰면 CSS 어림값을 쓴다
+		}
+	});
+
 	const bar = document.querySelector('.topbar.signed-in, .topbar.admin-signed-out');
 	const ghost = bar && bar.querySelector('.topbar-ghost');
 	if (!ghost || !ghost.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 		return;
+	}
+	try {
+		const saved = JSON.parse(sessionStorage.getItem(KEY) || 'null');
+		const brand = bar.querySelector('.brand');
+		if (saved && brand && Date.now() - saved.at < 10000) {
+			bar.style.setProperty('--brand-from', (saved.x - brandLeft(brand)) + 'px');
+		}
+	}
+	catch (e) {
+		// 저장소를 못 쓰면 CSS 어림값을 쓴다
 	}
 	// 이 스크립트는 화면이 그려진 뒤에 늦게 도착할 수 있다(새 버전을 처음 받거나 서버가 막 떠서 느릴 때).
 	// 그동안 CSS 쪽 움직임(로고 미끄러짐, 출발 알약 흐려지기, 탭 나타나기)은 이미 흘렀으므로,
