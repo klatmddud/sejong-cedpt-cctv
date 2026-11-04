@@ -61,7 +61,7 @@
 	</div>
 	<!--/* 관리자가 로그아웃한 직후 한 번: 관리자 상단 바의 탭을 그 자리(가운데 폭 1200px)에 그려 둔다.
 		로그아웃한 화면의 탭(adminLoggedOut) 알약을 topbar-motion.js가 언어 버튼 자리로 옮기고, 나머지는 흐려진다 */-->
-	<div class="topbar-ghost" aria-hidden="true" th:if="${adminLoggedOut}">
+	<div class="topbar-ghost" aria-hidden="true" th:if="${adminLoggedOut}" data-brand-from="CCTV 동의서 관리">
 		<div class="ghost-inner">
 			<span class="ghost-tab" th:classappend="${adminLoggedOut == 'dashboard'} ? 'current'"><span>학기 현황</span></span>
 			<span class="ghost-tab" th:classappend="${adminLoggedOut == 'roster'} ? 'current'"><span>명부 업로드</span></span>

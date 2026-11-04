@@ -261,6 +261,14 @@ img.brand-mark {
 	background: rgba(255, 255, 255, 0.35);
 }
 
+/* topbar-motion.js가 겹쳐 두는 이전 화면의 앱 이름 */
+.brand-name-prev {
+	position: absolute;
+	top: 0;
+	left: 0;
+	white-space: nowrap;
+}
+
 /* topbar-motion.js가 만드는 날아가는 알약. 출발·도착 알약의 글자를 겹쳐 담는다 */
 .topbar-flight {
 	position: absolute;

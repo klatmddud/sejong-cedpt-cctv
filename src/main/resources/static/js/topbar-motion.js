@@ -7,6 +7,23 @@
 	if (!ghost || !ghost.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 		return;
 	}
+	// 로고 옆 앱 이름: 이전 화면의 이름(data-brand-from)을 겹쳐 두고, 로그인 화면에서 언어를 바꿀 때처럼 서로 흐려지며 바꾼다
+	const name = bar.querySelector('.brand-name');
+	const prev = ghost.dataset.brandFrom;
+	if (name && prev && prev !== name.textContent.trim()) {
+		const color = getComputedStyle(name).color;
+		const old = document.createElement('span');
+		old.className = 'brand-name-prev';
+		old.textContent = prev;
+		old.style.color = color;
+		name.style.position = 'relative';
+		name.appendChild(old);
+		const fade = { duration: 350, easing: 'ease-in-out', fill: 'both' };
+		old.animate([{ opacity: 1 }, { opacity: 0 }], fade).finished.then(() => old.remove(), () => old.remove());
+		// 새 이름은 글자색으로 떠오르게 한다(겹쳐 둔 이전 이름은 자기 색을 따로 가져 영향이 없다)
+		name.animate([{ color: 'transparent' }, { color }], fade);
+	}
+
 	const toAdmin = bar.classList.contains('signed-in');
 	const from = ghost.querySelector(toAdmin ? '.ghost-pill' : '.ghost-tab.current');
 	const to = bar.querySelector(toAdmin ? 'nav a[aria-current]' : '.lang-switch');
