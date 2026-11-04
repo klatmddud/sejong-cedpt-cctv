@@ -7,6 +7,7 @@
 	const buttons = Array.from(filters.querySelectorAll('button[data-filter]'));
 	const courses = Array.from(document.querySelectorAll('.course-list > li[data-status]'));
 	const status = document.getElementById('filter-status');
+	const list = document.querySelector('.course-list');
 	const empty = document.getElementById('filter-empty');
 
 	function apply(filter) {
@@ -23,8 +24,18 @@
 		status.textContent = status.dataset.template.replace('{n}', shown);
 	}
 
+	// 탭을 바꿀 때마다 보이는 카드의 떠오르기를 처음부터 다시 시작한다(student.css의 .course-list.swap)
+	function replay() {
+		list.classList.remove('swap');
+		void list.offsetWidth;
+		list.classList.add('swap');
+	}
+
 	buttons.forEach((button) => {
-		button.addEventListener('click', () => apply(button.dataset.filter));
+		button.addEventListener('click', () => {
+			apply(button.dataset.filter);
+			replay();
+		});
 	});
 	filters.hidden = false;
 })();

@@ -1171,6 +1171,8 @@ body.landing {
 	padding: 4px;
 	background: var(--surface-sunken);
 	border-radius: var(--radius-control);
+	/* 제목(0), 진행 카드(60ms) 다음 순서로 떠오른다 */
+	animation: rise 500ms var(--ease-out) 120ms both;
 }
 
 .filters button {
@@ -1225,6 +1227,44 @@ body.landing {
 	border-radius: 16px;
 	box-shadow: var(--shadow);
 	transition: transform 180ms ease, box-shadow 200ms ease;
+}
+
+/* 처음 나올 때 탭 다음 순서로 위에서부터 차례로 떠오른다(다섯 번째부터는 같이).
+   떠오른 뒤에는 :hover의 transform이 먹도록 끝 상태를 남기지 않는다(backwards) */
+.course-list > .course {
+	animation: rise 500ms var(--ease-out) 180ms backwards;
+}
+
+.course-list > .course:nth-child(2) {
+	animation-delay: 220ms;
+}
+
+.course-list > .course:nth-child(3) {
+	animation-delay: 260ms;
+}
+
+.course-list > .course:nth-child(4) {
+	animation-delay: 300ms;
+}
+
+.course-list > .course:nth-child(n + 5) {
+	animation-delay: 340ms;
+}
+
+/* 전체·미제출·제출 완료 탭을 바꾸면 보이는 카드가 짧게 다시 떠오른다(course-list.js가 swap을 붙인다) */
+.course-list.swap > .course {
+	animation: swap-rise 250ms var(--ease-out) backwards;
+}
+
+.course-list.swap > .course:nth-child(n) {
+	animation-delay: 0ms;
+}
+
+@keyframes swap-rise {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
 }
 
 .course:hover {
