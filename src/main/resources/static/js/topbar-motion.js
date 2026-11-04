@@ -7,32 +7,76 @@
 	if (!ghost || !ghost.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 		return;
 	}
-	// 로고 옆 앱 이름: 이전 화면의 이름(data-brand-from)을 겹쳐 두고, 로그인 화면에서 언어를 바꿀 때처럼 서로 흐려지며 바꾼다
+	// 로고 옆 앱 이름: 이전 화면의 이름(data-brand-from)에서 새 이름으로 바꾼다.
+	// 두 이름에 같이 있는 앞 단어(예: "CCTV ")는 그대로 두고, 그 뒤에서 같이 있는 가장 긴 글자 묶음(예: "동의")은
+	// 이전 자리에서 새 자리로 미끄러진다. 나머지 글자만 흐려지거나 떠오른다(예: "촬영 " → "서 관리")
 	const name = bar.querySelector('.brand-name');
 	const prev = ghost.dataset.brandFrom;
 	const now = name ? name.textContent.trim() : '';
 	if (name && prev && prev !== now) {
-		// 두 이름에 같이 있는 앞 단어(예: "CCTV ")는 그대로 두고 뒷부분만 바꾼다
 		let same = 0;
 		while (same < prev.length && same < now.length && prev[same] === now[same]) {
 			same++;
 		}
 		const cut = now.slice(0, same).lastIndexOf(' ') + 1;
-		const rest = document.createElement('span');
-		rest.className = 'brand-name-rest';
-		rest.textContent = now.slice(cut);
-		name.textContent = now.slice(0, cut);
-		name.appendChild(rest);
+		const oldRest = prev.slice(cut);
+		const newRest = now.slice(cut);
+		let keep = { i: 0, j: 0, len: 0 };
+		for (let x = 0; x < oldRest.length; x++) {
+			for (let y = 0; y < newRest.length; y++) {
+				let len = 0;
+				while (x + len < oldRest.length && y + len < newRest.length && oldRest[x + len] === newRest[y + len]) {
+					len++;
+				}
+				if (len > keep.len) {
+					keep = { i: x, j: y, len };
+				}
+			}
+		}
 		const color = getComputedStyle(name).color;
-		const old = document.createElement('span');
-		old.className = 'brand-name-prev';
-		old.textContent = prev.slice(cut);
-		old.style.color = color;
-		rest.appendChild(old);
-		const fade = { duration: 350, easing: 'ease-in-out', fill: 'both' };
-		old.animate([{ opacity: 1 }, { opacity: 0 }], fade).finished.then(() => old.remove(), () => old.remove());
-		// 새 뒷부분은 글자색으로 떠오르게 한다(겹쳐 둔 이전 뒷부분은 자기 색을 따로 가져 영향이 없다)
-		rest.animate([{ color: 'transparent' }, { color }], fade);
+		const seg = (text, cls) => {
+			const span = document.createElement('span');
+			span.className = cls;
+			span.textContent = text;
+			return span;
+		};
+		// 미끄러지는 묶음과 겹치지 않게, 사라질 글자는 먼저 빨리 흐리고 생길 글자는 묶음이 거의 도착한 뒤 띄운다
+		const fadeOut = { duration: 150, easing: 'ease-out', fill: 'both' };
+		const fadeIn = { duration: 250, delay: 250, easing: 'ease-out', fill: 'both' };
+		name.textContent = now.slice(0, cut);
+		name.style.position = 'relative';
+		if (newRest.slice(keep.j, keep.j + keep.len).trim().length < 2) {
+			// 같이 있는 글자 묶음이 없으면 뒷부분 전체를 서로 흐려지며 바꾼다
+			const rest = seg(newRest, 'brand-name-rest');
+			const old = seg(oldRest, 'brand-name-prev');
+			old.style.color = color;
+			name.append(rest, old);
+			old.style.left = (rest.getBoundingClientRect().left - name.getBoundingClientRect().left) + 'px';
+			old.animate([{ opacity: 1 }, { opacity: 0 }], fadeOut).finished.then(() => old.remove(), () => old.remove());
+			rest.animate([{ opacity: 0 }, { opacity: 1 }], fadeIn);
+		}
+		else {
+			// 새 이름 = 앞 단어 + 새로 생길 앞글자 + 같이 있는 묶음 + 새로 생길 뒷글자
+			const before = seg(newRest.slice(0, keep.j), 'brand-seg');
+			const kept = seg(newRest.slice(keep.j, keep.j + keep.len), 'brand-seg brand-seg-keep');
+			const after = seg(newRest.slice(keep.j + keep.len), 'brand-seg');
+			const gone = [seg(oldRest.slice(0, keep.i), 'brand-name-prev'), seg(oldRest.slice(keep.i + keep.len), 'brand-name-prev')];
+			name.append(before, kept, after, ...gone);
+			const nb = name.getBoundingClientRect();
+			const bb = before.getBoundingClientRect();
+			const kb = kept.getBoundingClientRect();
+			// 묶음은 이전 이름에서 (사라질 앞글자 폭 - 생길 앞글자 폭)만큼 떨어진 자리에서 출발한다
+			const dx = gone[0].getBoundingClientRect().width - bb.width;
+			gone[0].style.left = (bb.left - nb.left) + 'px';
+			gone[1].style.left = (kb.left - nb.left + dx + kb.width) + 'px';
+			for (const el of gone) {
+				el.style.color = color;
+				el.animate([{ opacity: 1 }, { opacity: 0 }], fadeOut).finished.then(() => el.remove(), () => el.remove());
+			}
+			kept.animate([{ transform: 'translateX(' + dx + 'px)' }, { transform: 'none' }], { duration: 500, easing: 'cubic-bezier(0.3, 0.6, 0.3, 1)' });
+			before.animate([{ opacity: 0 }, { opacity: 1 }], fadeIn);
+			after.animate([{ opacity: 0 }, { opacity: 1 }], fadeIn);
+		}
 	}
 
 	const toAdmin = bar.classList.contains('signed-in');

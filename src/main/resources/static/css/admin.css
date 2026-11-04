@@ -292,16 +292,17 @@ img.brand-mark {
 	white-space: nowrap;
 }
 
-/* topbar-motion.js가 바꾸는 앱 이름 뒷부분과, 그 위에 겹쳐 두는 이전 화면의 뒷부분 */
-.brand-name-rest {
-	position: relative;
-}
-
+/* topbar-motion.js가 앱 이름을 바꿀 때 쓴다. 이전 이름에만 있던 글자(.brand-name-prev)는 제자리에 겹쳐 두고 흐리며,
+   두 이름에 같이 있는 글자 묶음(.brand-seg-keep)은 이전 자리에서 미끄러진다 */
 .brand-name-prev {
 	position: absolute;
 	top: 0;
 	left: 0;
-	white-space: nowrap;
+	white-space: pre;
+}
+
+.brand-seg-keep {
+	display: inline-block;
 }
 
 /* topbar-motion.js가 만드는 날아가는 알약. 출발·도착 알약의 글자를 겹쳐 담는다 */
