@@ -403,6 +403,35 @@ img.brand-mark {
 	padding: 28px 24px 48px;
 }
 
+/* 화면이 열릴 때 본문(제목, 알림, 카드)이 위에서부터 차례로 살짝 떠오른다. 상단 바는 움직이지 않는다.
+   탭을 자주 오가는 업무 화면이라 학생 화면(0.5초, 10px)보다 짧게 하고, 늦어도 0.15초 안에 모두 시작한다 */
+.page > :not(dialog) {
+	animation: page-rise 300ms var(--ease-out) both;
+}
+
+.page > :not(dialog):nth-child(2) {
+	animation-delay: 40ms;
+}
+
+.page > :not(dialog):nth-child(3) {
+	animation-delay: 80ms;
+}
+
+.page > :not(dialog):nth-child(4) {
+	animation-delay: 120ms;
+}
+
+.page > :not(dialog):nth-child(n + 5) {
+	animation-delay: 150ms;
+}
+
+@keyframes page-rise {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+}
+
 .page-head {
 	display: flex;
 	flex-wrap: wrap;
