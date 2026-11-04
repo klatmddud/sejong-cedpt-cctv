@@ -671,8 +671,8 @@ body.landing {
 }
 
 .hero-mark .brand-mark {
-	width: 136px;
-	height: 136px;
+	width: 150px;
+	height: 150px;
 	border-radius: 28px;
 	background: var(--accent);
 	color: #fff;
