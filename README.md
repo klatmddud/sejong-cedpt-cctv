@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="src/main/resources/static/img/favicon.svg" width="96" height="96" alt="CCTV 동의서 로고">
+
 # sejong-cedpt-cctv
 
 세종대학교 컴퓨터공학과 실습실 수업 수강생에게<br>
