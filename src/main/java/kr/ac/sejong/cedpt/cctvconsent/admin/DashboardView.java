@@ -12,7 +12,7 @@ import kr.ac.sejong.cedpt.cctvconsent.roster.RosterQueryService.StudentSummary;
 import kr.ac.sejong.cedpt.cctvconsent.roster.TargetRooms;
 
 /**
- * 관리자 첫 화면의 학기 요약: 전체 제출률, 동의서를 아직 다 내지 않은 학생 수, 강의실별 제출률, 데이터 점검.
+ * 관리자 첫 화면의 학기 요약: 강의실별 제출률과 그 머리의 전체 제출률·미제출 학생 수, 데이터 점검.
  * 수는 모두 수강 중인 수강(최근 명부 또는 sjpt에서 확인됨) 기준이다.
  *
  * @param progress 학생 기준 진행 상황
