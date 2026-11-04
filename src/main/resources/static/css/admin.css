@@ -13,6 +13,9 @@
 	--track: #f1efec;
 	--accent: #b4002f;
 	--accent-hover: #9a0028;
+	--accent-dark: #8f0025;
+	/* 학교 색 바 위의 옅은 글자. #b4002f 위에서 4.5:1 이상 */
+	--on-accent-muted: #f3d3db;
 	--accent-tint: #fdf3f5;
 	--accent-tint-border: #efbccb;
 	--accent-tint-text: #5c0018;
@@ -131,13 +134,17 @@ h3 {
 	border: 0;
 }
 
-/* 상단 메뉴: 흰 바탕, 위쪽 4px 학교 색 줄 */
+/* 상단 메뉴: 학생 화면과 같은 학교 색 바 */
 .topbar {
 	position: relative;
 	z-index: 10;
-	border-top: 4px solid var(--accent);
-	border-bottom: 1px solid var(--border);
-	background: var(--surface);
+	border-bottom: 1px solid var(--accent-dark);
+	background: var(--accent);
+	color: #fff;
+}
+
+.topbar :focus-visible {
+	outline-color: #fff;
 }
 
 .topbar-inner {
@@ -155,12 +162,12 @@ h3 {
 	display: flex;
 	align-items: center;
 	gap: 12px;
-	color: var(--text);
+	color: #fff;
 	text-decoration: none;
 }
 
 .brand:hover {
-	color: var(--text);
+	color: #fff;
 }
 
 /* 교표 자리. 지금은 글자로 채우고, 원본 이미지를 받으면 같은 클래스의 <img>로 바꾼다 */
@@ -169,11 +176,11 @@ h3 {
 	flex-shrink: 0;
 	align-items: center;
 	justify-content: center;
-	width: 40px;
-	height: 40px;
+	width: 36px;
+	height: 36px;
 	border-radius: 10px;
-	background: var(--accent);
-	color: #fff;
+	background: #fff;
+	color: var(--accent);
 	font-size: 13px;
 	font-weight: 800;
 	letter-spacing: 0.02em;
@@ -192,15 +199,14 @@ img.brand-mark {
 }
 
 .brand-eyebrow {
-	color: var(--accent);
+	color: var(--on-accent-muted);
 	font-size: 12px;
-	font-weight: 700;
-	letter-spacing: 0.04em;
+	font-weight: 500;
 }
 
 .brand-name {
 	font-size: 17px;
-	font-weight: 800;
+	font-weight: 700;
 }
 
 .topbar nav {
@@ -215,12 +221,12 @@ img.brand-mark {
 	display: flex;
 	align-items: center;
 	gap: 6px;
-	min-height: 40px;
+	min-height: 44px;
 	padding: 0 14px;
 	border: 0;
-	border-radius: 10px;
+	border-radius: 999px;
 	background: transparent;
-	color: var(--text-secondary);
+	color: var(--on-accent-muted);
 	font: inherit;
 	font-size: 14px;
 	font-weight: 600;
@@ -231,13 +237,13 @@ img.brand-mark {
 
 .topbar nav a:not([aria-current]):hover,
 .nav-button:hover {
-	background: #f3f1ee;
-	color: var(--text);
+	background: rgba(255, 255, 255, 0.14);
+	color: #fff;
 }
 
 .topbar nav a[aria-current] {
-	background: var(--accent-tint);
-	color: var(--accent);
+	background: rgba(255, 255, 255, 0.2);
+	color: #fff;
 	font-weight: 700;
 }
 
@@ -245,7 +251,7 @@ img.brand-mark {
 	width: 1px;
 	height: 20px;
 	margin: 0 6px;
-	background: var(--border);
+	background: rgba(255, 255, 255, 0.35);
 }
 
 .topbar form {
