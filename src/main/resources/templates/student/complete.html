@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{student/fragments :: head('sign.complete.title')}"></head>
+<head th:replace="~{student/fragments :: head('sign.complete.title', false)}"></head>
 <body>
 <header th:replace="~{student/fragments :: nav(${student})}"></header>
 <!--/* 제출한 뒤 보이는 화면(세션에 둔 submittedCourses, submittedSemester). 내 수업으로 가면 지운다 */-->

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{student/fragments :: head('sign.title')}"></head>
+<head th:replace="~{student/fragments :: head('sign.title', false)}"></head>
 <body>
 <header th:replace="~{student/fragments :: nav(${student})}"></header>
 <!--/* preselected: "지금 작성하기"로 고른 수업이나 제출이 거절되기 전에 골랐던 수업. 없으면(null) 모든 수업을 골라 둔다 */-->

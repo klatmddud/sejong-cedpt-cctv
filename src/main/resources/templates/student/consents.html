@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{student/fragments :: head('courses.title')}"></head>
+<head th:replace="~{student/fragments :: head('courses.title', false)}"></head>
 <body>
 <header th:replace="~{student/fragments :: nav(${student})}"></header>
 <main class="page wide">

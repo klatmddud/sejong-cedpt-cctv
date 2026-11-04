@@ -1897,11 +1897,8 @@ html {
 	}
 
 	/* 언어 선택 → 로그인: 맨 위 4px 빨간 줄이 로그인 화면 상단 바 높이까지 내려오고, 뒤로 가면 다시 줄어든다.
+	   화면 전환은 두 화면의 <head>에서만 켠다(fragments.html의 pageTransition).
 	   View Transitions를 지원하지 않는 브라우저(Firefox 등)에서는 지금처럼 바로 넘어간다 */
-	@view-transition {
-		navigation: auto;
-	}
-
 	body.landing .landing-strip,
 	body.login .topbar {
 		view-transition-name: topbar;

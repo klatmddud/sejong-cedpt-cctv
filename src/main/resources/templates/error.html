@@ -3,7 +3,7 @@
 	따로 문구가 없는 코드는 4xx, 5xx 문구로 보인다. 오류 원문(message, trace)은 내보내지 않는다(Spring 기본값) */-->
 <html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org"
 	  th:with="key=${ {400, 403, 404, 405, 413, 500, 503}.contains(status) } ? ${status} : (${status >= 500} ? '5xx' : '4xx')">
-<head th:replace="~{student/fragments :: head(${'error.' + key + '.title'})}"></head>
+<head th:replace="~{student/fragments :: head(${'error.' + key + '.title'}, false)}"></head>
 <body>
 <header th:replace="~{student/fragments :: nav(null)}"></header>
 <main class="page narrow">
