@@ -548,16 +548,32 @@ class StudentConsentFlowTest extends PostgresTestSupport {
 	}
 
 	@Test
-	void adminLogoutDoesNotSlideLanguageButton() throws Exception {
-		// 관리자 상단 바에는 언어 버튼이 없었으므로 로그인 화면에서 움직이지 않는다
+	void adminLogoutHandsTabPillBackToLanguageButton() throws Exception {
+		// 관리자가 명부 업로드 화면에서 로그아웃하면, 로그인 화면에 그 탭 알약을 출발 자리로 한 번 그려 둔다
 		org.springframework.mock.web.MockHttpSession session = (org.springframework.mock.web.MockHttpSession) mvc
-				.perform(post("/logout").with(csrf()).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN")))
+				.perform(post("/logout").param("from", "roster").with(csrf())
+						.with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN")))
 				.andExpect(redirectedUrl("/login"))
 				.andReturn().getRequest().getSession(false);
 		assertThat(session).isNotNull();
 		mvc.perform(get("/login").session(session))
 				.andExpect(content().string(Matchers.containsString("로그아웃했습니다.")))
-				.andExpect(content().string(Matchers.containsString("class=\"topbar\"")));
+				.andExpect(content().string(Matchers.containsString("class=\"topbar admin-signed-out\"")))
+				.andExpect(content().string(Matchers.containsString("<span class=\"ghost-tab current\"><span>명부 업로드</span>")));
+		mvc.perform(get("/login").session(session))
+				.andExpect(content().string(Matchers.containsString("class=\"topbar\"")))
+				.andExpect(content().string(Matchers.not(Matchers.containsString("topbar-ghost"))));
+	}
+
+	@Test
+	void adminLogoutIgnoresUnknownTab() throws Exception {
+		org.springframework.mock.web.MockHttpSession session = (org.springframework.mock.web.MockHttpSession) mvc
+				.perform(post("/logout").param("from", "<script>").with(csrf())
+						.with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN")))
+				.andReturn().getRequest().getSession(false);
+		mvc.perform(get("/login").session(session))
+				.andExpect(content().string(Matchers.containsString("class=\"topbar admin-signed-out\"")))
+				.andExpect(content().string(Matchers.not(Matchers.containsString("ghost-tab current"))));
 	}
 
 	@Test

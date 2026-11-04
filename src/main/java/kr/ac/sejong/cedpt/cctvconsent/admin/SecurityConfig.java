@@ -107,6 +107,7 @@ class SecurityConfig {
 	 * 관리자는 /admin, 학생은 /consents로 보낸다. 요청했던 주소로 돌려보내지 않는다(외부 주소로 보내는 것 방지).
 	 * SimpleUrlAuthenticationSuccessHandler를 써야 세션에 남은 이전 로그인 실패 사유도 지워진다.
 	 * 학생은 flash 속성(signedIn)을 넘겨, 로그인 직후 한 번만 상단 바에 계정 메뉴가 나타나는 움직임을 보여 준다.
+	 * 관리자는 adminSignedIn을 넘겨, 언어 버튼 알약이 '지금 보고 있는 탭' 표시로 바뀌는 움직임을 한 번 보여 준다.
 	 */
 	private static final class RoleTargetSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
@@ -115,12 +116,11 @@ class SecurityConfig {
 		@Override
 		public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 				Authentication authentication) throws IOException, ServletException {
-			if (!isAdmin(authentication)) {
-				FlashMap flash = new FlashMap();
-				flash.put("signedIn", true);
-				flash.setTargetRequestPath(request.getContextPath() + "/consents");
-				flashMaps.saveOutputFlashMap(flash, request, response);
-			}
+			boolean admin = isAdmin(authentication);
+			FlashMap flash = new FlashMap();
+			flash.put(admin ? "adminSignedIn" : "signedIn", true);
+			flash.setTargetRequestPath(request.getContextPath() + (admin ? "/admin" : "/consents"));
+			flashMaps.saveOutputFlashMap(flash, request, response);
 			super.onAuthenticationSuccess(request, response, authentication);
 		}
 
@@ -136,8 +136,12 @@ class SecurityConfig {
 	 * 로그아웃 뒤 /login으로 보내고, 안내("로그아웃했습니다")는 flash 속성(loggedOut)으로 넘겨 한 번만 보여 준다.
 	 * 주소(/login?logout)로 넘기면 새로고침할 때마다 안내가 다시 뜬다. 세션은 이미 무효화되어 flash용 새 세션이 생긴다.
 	 * 학생이면 studentLoggedOut도 넘겨, 언어 버튼이 계정 메뉴가 있던 자리로 돌아가는 움직임을 한 번 보여 준다.
+	 * 관리자면 adminLoggedOut에 로그아웃한 화면의 탭(from)을 넘겨, 그 탭 알약이 언어 버튼으로 바뀌는 움직임을 보여 준다.
 	 */
 	private static final class LoggedOutNoticeHandler extends SimpleUrlLogoutSuccessHandler {
+
+		/** admin/fragments.html 상단 바 탭의 active 값. 그 밖의 값은 받지 않는다 */
+		private static final java.util.Set<String> ADMIN_TABS = java.util.Set.of("dashboard", "roster", "login-locks");
 
 		private final FlashMapManager flashMaps = new SessionFlashMapManager();
 
@@ -151,7 +155,11 @@ class SecurityConfig {
 				Authentication authentication) throws IOException, ServletException {
 			FlashMap flash = new FlashMap();
 			flash.put("loggedOut", true);
-			if (authentication != null && !isAdmin(authentication)) {
+			if (isAdmin(authentication)) {
+				String from = request.getParameter("from");
+				flash.put("adminLoggedOut", ADMIN_TABS.contains(from) ? from : "none");
+			}
+			else if (authentication != null) {
 				flash.put("studentLoggedOut", true);
 			}
 			flash.setTargetRequestPath(request.getContextPath() + "/login");

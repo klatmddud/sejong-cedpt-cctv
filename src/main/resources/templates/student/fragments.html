@@ -11,6 +11,7 @@
 	<!--/* 가변 글꼴 판: 굵기 전체가 한 글꼴이고, 화면에 나온 글자 묶음만 받는다(정적 판은 굵기마다 약 780KB) */-->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 	<link rel="stylesheet" th:href="@{/css/student.css}">
+	<script th:src="@{/js/topbar-motion.js}" defer></script>
 	<style th:if="${pageTransition}">@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
 </head>
 <body>
@@ -26,7 +27,7 @@
 </a>
 
 <!--/* 상단 바. student가 없으면(로그인 화면) 계정 메뉴 없이 언어 바꾸기만 둔다 */-->
-<header th:fragment="nav(student)" class="topbar" th:classappend="${signedIn} ? 'signed-in' : (${studentLoggedOut} ? 'signed-out')">
+<header th:fragment="nav(student)" class="topbar" th:classappend="${signedIn} ? 'signed-in' : (${studentLoggedOut} ? 'signed-out' : (${adminLoggedOut} ? 'admin-signed-out'))">
 	<div class="topbar-inner">
 		<a class="brand" th:href="${student != null} ? @{/consents} : @{/}">
 			<img th:replace="~{student/fragments :: brandMark('logo-white.svg')}">
@@ -56,6 +57,17 @@
 					</form>
 				</div>
 			</details>
+		</div>
+	</div>
+	<!--/* 관리자가 로그아웃한 직후 한 번: 관리자 상단 바의 탭을 그 자리(가운데 폭 1200px)에 그려 둔다.
+		로그아웃한 화면의 탭(adminLoggedOut) 알약을 topbar-motion.js가 언어 버튼 자리로 옮기고, 나머지는 흐려진다 */-->
+	<div class="topbar-ghost" aria-hidden="true" th:if="${adminLoggedOut}">
+		<div class="ghost-inner">
+			<span class="ghost-tab" th:classappend="${adminLoggedOut == 'dashboard'} ? 'current'"><span>학기 현황</span></span>
+			<span class="ghost-tab" th:classappend="${adminLoggedOut == 'roster'} ? 'current'"><span>명부 업로드</span></span>
+			<span class="ghost-tab" th:classappend="${adminLoggedOut == 'login-locks'} ? 'current'"><span>로그인 제한</span></span>
+			<span class="ghost-divider"></span>
+			<span class="ghost-tab"><span>로그아웃</span></span>
 		</div>
 	</div>
 </header>

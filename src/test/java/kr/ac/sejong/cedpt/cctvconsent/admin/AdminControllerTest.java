@@ -132,6 +132,22 @@ class AdminControllerTest extends PostgresTestSupport {
 	}
 
 	@Test
+	void languagePillTurnsIntoCurrentTabOnlyRightAfterLogin() throws Exception {
+		MvcResult ok = mvc.perform(post("/login").param("username", ADMIN_USERNAME).param("password", ADMIN_PASSWORD)
+						.with(csrf()))
+				.andExpect(redirectedUrl("/admin"))
+				.andReturn();
+		MockHttpSession session = (MockHttpSession) ok.getRequest().getSession();
+		mvc.perform(get("/admin").session(session))
+				.andExpect(content().string(Matchers.containsString("class=\"topbar signed-in\"")))
+				.andExpect(content().string(Matchers.containsString("class=\"topbar-ghost\"")));
+		// 새로고침하면 다시 움직이지 않는다
+		mvc.perform(get("/admin").session(session))
+				.andExpect(content().string(Matchers.containsString("class=\"topbar\"")))
+				.andExpect(content().string(Matchers.not(Matchers.containsString("topbar-ghost"))));
+	}
+
+	@Test
 	void clearsEarlierFailureAfterSuccessfulLogin() throws Exception {
 		MockHttpSession session = new MockHttpSession();
 		mvc.perform(post("/login").session(session).param("username", ADMIN_USERNAME).param("password", "wrong")

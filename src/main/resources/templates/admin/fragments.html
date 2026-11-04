@@ -6,9 +6,10 @@
 	<title th:text="${title} + ' · CCTV 동의서 관리'">CCTV 동의서 관리</title>
 	<link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}">
 	<link rel="stylesheet" th:href="@{/css/admin.css}">
+	<script th:src="@{/js/topbar-motion.js}" defer></script>
 </head>
 <body>
-<header th:fragment="nav(active)" class="topbar">
+<header th:fragment="nav(active)" class="topbar" th:classappend="${adminSignedIn} ? 'signed-in'">
 	<div class="topbar-inner">
 		<a class="brand" th:href="@{/admin}">
 			<!--/* 서비스 로고(렌즈 체크). 옆 글자가 서비스 이름을 읽어 주므로 alt는 비워 둔다 */-->
@@ -24,6 +25,8 @@
 			<a th:href="@{/admin/login-locks}" th:attr="aria-current=${active == 'login-locks'} ? 'page'">로그인 제한</a>
 			<span class="nav-divider" aria-hidden="true"></span>
 			<form th:action="@{/logout}" method="post">
+				<!--/* 로그아웃 뒤 로그인 화면에서 이 탭 알약이 언어 버튼으로 바뀌는 움직임에 쓴다(SecurityConfig.LoggedOutNoticeHandler) */-->
+				<input type="hidden" name="from" th:value="${active}">
 				<button type="submit" class="nav-button">
 					<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
 						 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -35,6 +38,13 @@
 				</button>
 			</form>
 		</nav>
+	</div>
+	<!--/* 로그인 직후 한 번: 로그인 화면 상단 바의 언어 버튼을 그 자리(가운데 폭 1072px)에 그려 둔다.
+		topbar-motion.js가 이 알약을 지금 보고 있는 탭 자리로 옮긴다 */-->
+	<div class="topbar-ghost" aria-hidden="true" th:if="${adminSignedIn}">
+		<div class="ghost-inner">
+			<span class="ghost-pill"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span th:text="#{language.switch.short}">EN</span></span>
+		</div>
 	</div>
 </header>
 

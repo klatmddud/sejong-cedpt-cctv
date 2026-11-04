@@ -214,6 +214,111 @@ img.brand-mark {
 	}
 }
 
+/* 관리자가 로그아웃한 직후 한 번(flash adminLoggedOut). 관리자 상단 바에서 이어지는 움직임이다.
+   로고는 관리자 자리(가운데 폭 1200px, 여백 24px)에서 로그인 화면 자리로 미끄러진다.
+   로그아웃한 화면의 탭 알약(.topbar-ghost .current)은 topbar-motion.js가 언어 버튼 자리로 옮기고, 나머지 탭은 흐려진다.
+   스크립트가 없으면 알약도 제자리에서 흐려지고 언어 버튼은 서서히 나타난다 */
+.topbar-ghost {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.topbar-ghost .ghost-inner {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 4px;
+	max-width: 1200px;
+	height: 100%;
+	margin: 0 auto;
+	padding: 0 24px;
+}
+
+.ghost-tab {
+	display: flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 0 14px;
+	border: 1px solid transparent;
+	border-radius: 999px;
+	color: var(--on-accent-muted);
+	font-size: 14px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.ghost-tab.current {
+	background: rgba(255, 255, 255, 0.2);
+	color: #fff;
+	font-weight: 700;
+}
+
+.ghost-divider {
+	width: 1px;
+	height: 20px;
+	margin: 0 6px;
+	background: rgba(255, 255, 255, 0.35);
+}
+
+.topbar.admin-signed-out {
+	--brand-from: calc(max(0px, (100vw - 1200px) / 2) + 24px - max(0px, (100vw - 1072px) / 2) - 16px);
+}
+
+@media (max-width: 640px) {
+	.topbar-ghost .ghost-inner {
+		padding: 0 16px;
+	}
+
+	.topbar.admin-signed-out {
+		--brand-from: 0px;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.topbar.admin-signed-out .brand {
+		animation: brand-shift 450ms var(--ease-out) both;
+	}
+
+	.topbar-ghost .ghost-tab,
+	.topbar-ghost .ghost-divider {
+		animation: ghost-out 240ms ease-out both;
+	}
+
+	.topbar-ghost .ghost-tab.current {
+		animation-duration: 300ms;
+		animation-delay: 150ms;
+	}
+
+	.topbar.admin-signed-out .lang-switch {
+		animation: lang-arrive 300ms 150ms var(--ease-out) both;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.topbar-ghost {
+		display: none;
+	}
+}
+
+@keyframes brand-shift {
+	from {
+		transform: translateX(var(--brand-from));
+	}
+}
+
+@keyframes ghost-out {
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes lang-arrive {
+	from {
+		opacity: 0;
+	}
+}
+
 @keyframes give-back-room {
 	from {
 		transform: translateX(-68px);

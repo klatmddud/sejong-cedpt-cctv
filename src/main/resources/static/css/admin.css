@@ -258,6 +258,99 @@ img.brand-mark {
 	margin: 0;
 }
 
+/* 관리자 로그인 직후 한 번(flash adminSignedIn). 로그인 화면 상단 바에서 이어지는 움직임이다.
+   로고는 로그인 화면 자리(가운데 폭 1072px, 여백 16px)에서 관리자 자리로 미끄러진다.
+   언어 버튼 알약(.topbar-ghost)은 topbar-motion.js가 지금 보고 있는 탭 자리로 옮기고, 나머지 탭은 오른쪽에서 차례로 나타난다.
+   스크립트가 없으면 알약은 제자리에서 흐려지기만 한다 */
+.topbar-ghost {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.topbar-ghost .ghost-inner {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	max-width: 1072px;
+	height: 100%;
+	margin: 0 auto;
+	padding: 0 16px;
+}
+
+.ghost-pill {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 44px;
+	padding: 0 12px;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	border-radius: 999px;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.topbar.signed-in {
+	--brand-from: calc(max(0px, (100vw - 1072px) / 2) + 16px - max(0px, (100vw - 1200px) / 2) - 24px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.topbar.signed-in .brand {
+		animation: brand-shift 450ms var(--ease-out) both;
+	}
+
+	.topbar.signed-in nav > :not([aria-current]) {
+		animation: tab-in 320ms var(--ease-out) both;
+	}
+
+	.topbar.signed-in nav > :nth-child(2) {
+		animation-delay: 160ms;
+	}
+
+	.topbar.signed-in nav > :nth-child(3) {
+		animation-delay: 220ms;
+	}
+
+	.topbar.signed-in nav > :nth-child(4) {
+		animation-delay: 280ms;
+	}
+
+	.topbar.signed-in nav > :nth-child(5) {
+		animation-delay: 340ms;
+	}
+
+	.topbar-ghost .ghost-pill {
+		animation: ghost-out 300ms ease-out both;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.topbar-ghost {
+		display: none;
+	}
+}
+
+@keyframes brand-shift {
+	from {
+		transform: translateX(var(--brand-from));
+	}
+}
+
+@keyframes tab-in {
+	from {
+		opacity: 0;
+		transform: translateX(12px);
+	}
+}
+
+@keyframes ghost-out {
+	to {
+		opacity: 0;
+	}
+}
+
 /* 본문 */
 .page {
 	display: flex;
@@ -2280,6 +2373,11 @@ dialog.course-detail[open]::backdrop {
 	.topbar-inner,
 	.page {
 		padding-inline: 16px;
+	}
+
+	/* 좁은 화면에서는 로그인 화면과 관리자 화면의 로고 자리가 같다 */
+	.topbar.signed-in {
+		--brand-from: 0px;
 	}
 
 	.page {
