@@ -105,7 +105,7 @@
 					<h2>강의실별 제출률</h2>
 					<span class="muted small">누르면 시간표로 이동</span>
 				</div>
-				<!--/* 옆의 '제출률 낮은 강의' 표와 같은 머리글. 각 행의 링크 글자가 값을 다 읽어 주므로 스크린리더에서는 숨긴다.
+				<!--/* 표처럼 보이는 머리글. 각 행의 링크 글자가 값을 다 읽어 주므로 스크린리더에서는 숨긴다.
 					카드의 항목 간격이 머리글과 목록 사이에 생기지 않도록 둘을 한 div로 묶는다 */-->
 				<div>
 					<div class="room-rates-head" aria-hidden="true">
@@ -124,68 +124,49 @@
 				</div>
 			</section>
 			<section class="card">
-				<h2>제출률 낮은 강의</h2>
-				<p class="muted" th:if="*{#lists.isEmpty(lagging)}">모든 강의의 동의서를 받았습니다.</p>
-				<div class="table-wrap" th:unless="*{#lists.isEmpty(lagging)}">
-					<table class="wrap">
-						<thead>
-						<tr><th>강의</th><th>강의실 · 시간</th><th class="num">미제출</th><th class="num">제출률</th></tr>
-						</thead>
-						<tbody>
-						<tr th:each="item : *{lagging}">
-							<td><strong th:text="${item.course.name}">컴퓨터네트워크</strong>
-								<span class="sub" th:text="|${item.course.code} · ${item.course.professor}|">003284-008 · [담당교수]</span></td>
-							<td><span th:text="${item.course.room}">센B201</span>
-								<span class="sub" th:text="${item.course.schedule}">월수12:00-13:30</span></td>
-							<td class="num"><span class="count-pill" th:text="${item.unsubmitted}">39</span></td>
-							<td class="num strong" th:text="|${item.rate}%|">0%</td>
-						</tr>
-						</tbody>
-					</table>
-				</div>
+				<h2>데이터 점검</h2>
+				<ul class="checks">
+					<li class="ok" th:if="*{#lists.isEmpty(sjptOnly)}">
+						<svg th:replace="~{admin/fragments :: icon-ok}"></svg>
+						<span>명부에 없는 수강이 없습니다.</span>
+					</li>
+					<li class="warn" th:unless="*{#lists.isEmpty(sjptOnly)}">
+						<svg th:replace="~{admin/fragments :: icon-warn}"></svg>
+						<span class="grow" th:text="|명부에 없고 학생 로그인으로만 확인된 수강이 *{#lists.size(sjptOnly)}건 있습니다. 명부에서 빠졌거나 타과 수업인지 확인하세요.|">
+							명부에 없고 학생 로그인으로만 확인된 수강이 3건 있습니다.
+						</span>
+						<button type="button" class="button outline-warn small" data-dialog="sjpt-only">상세 보기</button>
+					</li>
+					<li class="ok" th:if="*{#lists.isEmpty(unscheduled)}">
+						<svg th:replace="~{admin/fragments :: icon-ok}"></svg>
+						<span>모든 강의가 시간표에 나옵니다.</span>
+					</li>
+					<li class="warn" th:unless="*{#lists.isEmpty(unscheduled)}">
+						<svg th:replace="~{admin/fragments :: icon-warn}"></svg>
+						<!--/* 강의가 많아도 카드가 길어지지 않게 이름은 앞의 3개까지만 보여 준다 */-->
+						<span th:with="shown=${dashboard.unscheduled.size() > 3 ? dashboard.unscheduled.subList(0, 3) : dashboard.unscheduled},
+								more=${dashboard.unscheduled.size() - 3}"
+							  th:text="|강의시간을 읽지 못해 시간표에 나오지 않는 강의가 ${#lists.size(dashboard.unscheduled)}개 있습니다: ${#strings.listJoin(shown.![name + ' (' + code + ')'], ', ')}${more > 0 ? ' 외 ' + more + '개' : ''}|">
+							강의시간을 읽지 못해 시간표에 나오지 않는 강의가 1개 있습니다.
+						</span>
+					</li>
+					<li class="warn" th:if="*{lastRosterUploadAt == null}">
+						<svg th:replace="~{admin/fragments :: icon-warn}"></svg>
+						<span>이 학기 명부를 아직 올리지 않았습니다. 명부를 올려야 로그인하지 않은 학생까지 미제출로 잡힙니다.</span>
+					</li>
+					<li class="info" th:unless="*{lastRosterUploadAt == null}">
+						<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+							 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"></circle>
+							<path d="M12 6v6l4 2"></path>
+						</svg>
+						<span>마지막 명부 반영: <strong class="tabular"
+								th:text="${#temporals.format(dashboard.lastRosterUploadAt.atZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')), 'yyyy-MM-dd HH:mm')}">2026-10-22 18:53</strong>.
+							수강정정 기간이 끝난 뒤 최종 명부를 다시 올렸는지 확인하세요.</span>
+					</li>
+				</ul>
 			</section>
 		</div>
-
-		<section class="card">
-			<h2>데이터 점검</h2>
-			<ul class="checks">
-				<li class="ok" th:if="*{#lists.isEmpty(sjptOnly)}">
-					<svg th:replace="~{admin/fragments :: icon-ok}"></svg>
-					<span>명부에 없는 수강이 없습니다.</span>
-				</li>
-				<li class="warn" th:unless="*{#lists.isEmpty(sjptOnly)}">
-					<svg th:replace="~{admin/fragments :: icon-warn}"></svg>
-					<span class="grow" th:text="|명부에 없고 학생 로그인으로만 확인된 수강이 *{#lists.size(sjptOnly)}건 있습니다. 명부에서 빠졌거나 타과 수업인지 확인하세요.|">
-						명부에 없고 학생 로그인으로만 확인된 수강이 3건 있습니다.
-					</span>
-					<button type="button" class="button outline-warn small" data-dialog="sjpt-only">상세 보기</button>
-				</li>
-				<li class="ok" th:if="*{#lists.isEmpty(unscheduled)}">
-					<svg th:replace="~{admin/fragments :: icon-ok}"></svg>
-					<span>모든 강의가 시간표에 나옵니다.</span>
-				</li>
-				<li class="warn" th:unless="*{#lists.isEmpty(unscheduled)}">
-					<svg th:replace="~{admin/fragments :: icon-warn}"></svg>
-					<span th:text="|강의시간을 읽지 못해 시간표에 나오지 않는 강의가 ${#lists.size(dashboard.unscheduled)}개 있습니다: ${#strings.listJoin(dashboard.unscheduled.![name + ' (' + code + ')'], ', ')}|">
-						강의시간을 읽지 못해 시간표에 나오지 않는 강의가 1개 있습니다.
-					</span>
-				</li>
-				<li class="warn" th:if="*{lastRosterUploadAt == null}">
-					<svg th:replace="~{admin/fragments :: icon-warn}"></svg>
-					<span>이 학기 명부를 아직 올리지 않았습니다. 명부를 올려야 로그인하지 않은 학생까지 미제출로 잡힙니다.</span>
-				</li>
-				<li class="info" th:unless="*{lastRosterUploadAt == null}">
-					<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-						 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<circle cx="12" cy="12" r="10"></circle>
-						<path d="M12 6v6l4 2"></path>
-					</svg>
-					<span>마지막 명부 반영: <strong class="tabular"
-							th:text="${#temporals.format(dashboard.lastRosterUploadAt.atZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')), 'yyyy-MM-dd HH:mm')}">2026-10-22 18:53</strong>.
-						수강정정 기간이 끝난 뒤 최종 명부를 다시 올렸는지 확인하세요.</span>
-				</li>
-			</ul>
-		</section>
 	</th:block>
 
 	<section class="card">

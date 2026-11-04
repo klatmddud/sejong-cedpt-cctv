@@ -39,8 +39,6 @@ class DashboardViewTest {
 		// B는 로그인 확인 안 됨. D는 한 강의만 sjpt에서 확인되어도, E는 sjpt에 없어도 동의서를 냈으므로 로그인한 학생
 		assertThat(view.progress()).isEqualTo(new DashboardView.StudentProgress(1, 2, 2));
 		assertThat(view.rooms()).extracting(r -> r.room() + "/" + r.rate()).containsExactly("센B201/66", "센B203/0");
-		assertThat(view.lagging()).extracting(c -> c.course().code() + "/" + c.unsubmitted() + "/" + c.rate())
-				.containsExactly("000306-001/3/0", "000304-001/1/66", "000305-001/1/66");
 		assertThat(view.unscheduled()).extracting(CourseSummary::code).containsExactly("000306-001");
 		assertThat(view.sjptOnly()).containsExactly(SJPT_ONLY);
 	}
