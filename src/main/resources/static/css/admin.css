@@ -156,9 +156,9 @@ h3 {
 	align-items: center;
 	justify-content: space-between;
 	gap: 12px 24px;
-	max-width: 1200px;
+	max-width: var(--topbar-admin-max);
 	margin: 0 auto;
-	padding: 14px 24px;
+	padding: 14px var(--topbar-admin-pad);
 }
 
 .brand {
@@ -262,23 +262,13 @@ img.brand-mark {
 }
 
 /* 관리자 로그인 직후 한 번(flash adminSignedIn). 로그인 화면 상단 바에서 이어지는 움직임이다.
-   로고는 로그인 화면 자리(가운데 폭 1072px, 여백 16px)에서 관리자 자리로 미끄러진다.
+   로고는 로그인 화면 자리(--topbar-student-max, --topbar-student-pad)에서 관리자 자리로 미끄러진다.
+   함께 쓰는 규칙은 topbar-motion.css에 있다.
    언어 버튼 알약(.topbar-ghost)은 topbar-motion.js가 지금 보고 있는 탭 자리로 옮기고, 나머지 탭은 오른쪽에서 차례로 나타난다.
    스크립트가 없으면 알약은 제자리에서 흐려지기만 한다 */
-.topbar-ghost {
-	position: absolute;
-	inset: 0;
-	pointer-events: none;
-}
-
 .topbar-ghost .ghost-inner {
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	max-width: 1072px;
-	height: 100%;
-	margin: 0 auto;
-	padding: 0 16px;
+	max-width: var(--topbar-student-max);
+	padding: 0 var(--topbar-student-pad);
 }
 
 .ghost-pill {
@@ -295,39 +285,9 @@ img.brand-mark {
 	white-space: nowrap;
 }
 
-/* topbar-motion.js가 앱 이름을 바꿀 때 쓴다. 이전 이름에만 있던 글자(.brand-name-prev)는 제자리에 겹쳐 두고 흐리며,
-   두 이름에 같이 있는 글자 묶음(.brand-seg-keep)은 이전 자리에서 미끄러진다 */
-.brand-name-prev {
-	position: absolute;
-	top: 0;
-	left: 0;
-	white-space: pre;
-}
-
-.brand-seg-keep {
-	display: inline-block;
-}
-
-/* topbar-motion.js가 만드는 날아가는 알약. 출발·도착 알약의 글자를 겹쳐 담는다 */
-.topbar-flight {
-	position: absolute;
-	box-sizing: border-box;
-	overflow: hidden;
-	border: 1px solid transparent;
-	border-radius: 999px;
-}
-
-.topbar-flight-label {
-	position: absolute;
-	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	white-space: nowrap;
-}
-
 .topbar.signed-in {
-	--brand-from: calc(max(0px, (100vw - 1072px) / 2) + 16px - max(0px, (100cqw - 1200px) / 2) - 24px);
+	--brand-from: calc(max(0px, (100vw - var(--topbar-student-max)) / 2) + var(--topbar-student-pad)
+		- max(0px, (100cqw - var(--topbar-admin-max)) / 2) - var(--topbar-admin-pad));
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -365,18 +325,6 @@ img.brand-mark {
 	}
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.topbar-ghost {
-		display: none;
-	}
-}
-
-@keyframes brand-shift {
-	from {
-		transform: translateX(var(--brand-from));
-	}
-}
-
 @keyframes hold-hidden {
 	from {
 		opacity: 0;
@@ -390,11 +338,6 @@ img.brand-mark {
 	}
 }
 
-@keyframes ghost-out {
-	to {
-		opacity: 0;
-	}
-}
 
 /* 본문 */
 .page {

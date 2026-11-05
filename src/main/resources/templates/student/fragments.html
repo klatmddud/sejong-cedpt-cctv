@@ -11,6 +11,7 @@
 	<!--/* 가변 글꼴 판: 굵기 전체가 한 글꼴이고, 화면에 나온 글자 묶음만 받는다(정적 판은 굵기마다 약 780KB) */-->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 	<link rel="stylesheet" th:href="@{/css/student.css}">
+	<link rel="stylesheet" th:href="@{/css/topbar-motion.css}">
 	<script th:src="@{/js/topbar-motion.js}" defer></script>
 	<style th:if="${pageTransition}">@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
 	<script th:if="${pageTransition}" th:src="@{/js/page-transition.js}" defer></script>
@@ -20,10 +21,15 @@
 	옆 글자(또는 언어 선택 화면 제목)가 서비스 이름을 읽어 주므로 alt는 비워 둔다. 상단 바와 언어 선택 화면이 함께 쓴다 */-->
 <img th:fragment="brandMark(file)" class="brand-mark" th:src="@{/img/{file}(file=${file})}" alt="">
 
+<!--/* 지구본 아이콘. 언어 바꾸기 버튼과, 관리자 로그인 직후 그 버튼 자리를 그리는 관리자 화면의 고스트가 같이 쓴다.
+	관리자 화면에는 student.css의 .icon이 없으므로 선 모양을 속성으로도 준다 */-->
+<svg th:fragment="globeIcon" class="icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none"
+	 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+
 <!--/* 언어 바꾸기. 지금 화면 주소에 ?lang=만 붙인다. 다른 주소 값은 student-nav.js가 유지한다 */-->
 <a th:fragment="langSwitch" class="lang-switch" th:href="@{''(lang=#{language.switch.lang})}"
    th:lang="#{language.switch.lang}" th:attr="aria-label=#{language.switch}">
-	<svg class="icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+	<svg th:replace="~{student/fragments :: globeIcon}"></svg>
 	<span th:text="#{language.switch.short}">EN</span>
 </a>
 
@@ -60,13 +66,11 @@
 			</details>
 		</div>
 	</div>
-	<!--/* 관리자가 로그아웃한 직후 한 번: 관리자 상단 바의 탭을 그 자리(가운데 폭 1200px)에 그려 둔다.
+	<!--/* 관리자가 로그아웃한 직후 한 번: 관리자 상단 바의 탭(AdminTab)을 그 자리(topbar-motion.css의 --topbar-admin-max)에 그려 둔다.
 		로그아웃한 화면의 탭(adminLoggedOut) 알약을 topbar-motion.js가 언어 버튼 자리로 옮기고, 나머지는 흐려진다 */-->
-	<div class="topbar-ghost" aria-hidden="true" th:if="${adminLoggedOut}" data-brand-from="CCTV 동의서 관리">
+	<div class="topbar-ghost" aria-hidden="true" th:if="${adminLoggedOut}" th:attr="data-brand-from=#{admin.title}">
 		<div class="ghost-inner">
-			<span class="ghost-tab" th:classappend="${adminLoggedOut == 'dashboard'} ? 'current'"><span>학기 현황</span></span>
-			<span class="ghost-tab" th:classappend="${adminLoggedOut == 'roster'} ? 'current'"><span>명부 업로드</span></span>
-			<span class="ghost-tab" th:classappend="${adminLoggedOut == 'login-locks'} ? 'current'"><span>로그인 제한</span></span>
+			<span class="ghost-tab" th:each="tab : ${adminTabs}" th:classappend="${adminLoggedOut == tab.id} ? 'current'"><span th:text="${tab.label}">학기 현황</span></span>
 			<span class="ghost-divider"></span>
 			<span class="ghost-tab"><span>로그아웃</span></span>
 		</div>

@@ -33,11 +33,8 @@ class DashboardViewTest {
 		assertThat(view.total()).isEqualTo(9);
 		assertThat(view.submitted()).isEqualTo(4);
 		assertThat(view.rate()).isEqualTo(44);
-		// B는 두 강의에서 미제출이지만 한 명으로 센다
-		assertThat(view.progress().pending()).isEqualTo(3);
-		assertThat(view.progress().total()).isEqualTo(5);
-		// B는 로그인 확인 안 됨. D는 한 강의만 sjpt에서 확인되어도, E는 sjpt에 없어도 동의서를 냈으므로 로그인한 학생
-		assertThat(view.progress()).isEqualTo(new DashboardView.StudentProgress(1, 2, 2));
+		// B는 두 강의에서 미제출이지만 한 명으로 센다(미제출 학생은 B·D·E)
+		assertThat(view.pendingStudents()).isEqualTo(3);
 		assertThat(view.rooms()).extracting(r -> r.room() + "/" + r.rate()).containsExactly("센B201/66", "센B203/0");
 		assertThat(view.unscheduled()).extracting(CourseSummary::code).containsExactly("000306-001");
 		assertThat(view.sjptOnly()).containsExactly(SJPT_ONLY);

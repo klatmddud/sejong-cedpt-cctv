@@ -1,0 +1,73 @@
+/* 상단 바 움직임(관리자 로그인·로그아웃 직후, topbar-motion.js)에 학생·관리자 화면이 함께 쓰는 규칙과 값.
+   화면마다 다른 부분(출발 자리 배치, 화면별 움직임)은 admin.css와 student.css에 둔다 */
+:root {
+	/* 두 상단 바의 가운데 폭과 좌우 여백. 각 화면의 .topbar-inner와, 상대 화면의 자리를 그리는 .ghost-inner·--brand-from이 같이 쓴다 */
+	--topbar-student-max: 1072px;
+	--topbar-student-pad: 16px;
+	--topbar-admin-max: 1200px;
+	--topbar-admin-pad: 24px;
+}
+
+/* 이전 화면의 상단 바 배치를 겹쳐 그리는 층. 출발 알약이 여기 있다 */
+.topbar-ghost {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.topbar-ghost .ghost-inner {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	height: 100%;
+	margin: 0 auto;
+}
+
+/* topbar-motion.js가 앱 이름을 바꿀 때 쓴다. 이전 이름에만 있던 글자(.brand-name-prev)는 제자리에 겹쳐 두고 흐리며,
+   두 이름에 같이 있는 글자 묶음(.brand-seg-keep)은 이전 자리에서 미끄러진다 */
+.brand-name-prev {
+	position: absolute;
+	top: 0;
+	left: 0;
+	white-space: pre;
+}
+
+.brand-seg-keep {
+	display: inline-block;
+}
+
+/* topbar-motion.js가 만드는 날아가는 알약. 출발·도착 알약의 글자를 겹쳐 담는다 */
+.topbar-flight {
+	position: absolute;
+	box-sizing: border-box;
+	overflow: hidden;
+	border: 1px solid transparent;
+	border-radius: 999px;
+}
+
+.topbar-flight-label {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.topbar-ghost {
+		display: none;
+	}
+}
+
+@keyframes brand-shift {
+	from {
+		transform: translateX(var(--brand-from));
+	}
+}
+
+@keyframes ghost-out {
+	to {
+		opacity: 0;
+	}
+}

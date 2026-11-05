@@ -3,9 +3,10 @@
 <head th:fragment="head(title)">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title th:text="${title} + ' · CCTV 동의서 관리'">CCTV 동의서 관리</title>
+	<title th:text="${title} + ' · ' + #{admin.title}">CCTV 동의서 관리</title>
 	<link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}">
 	<link rel="stylesheet" th:href="@{/css/admin.css}">
+	<link rel="stylesheet" th:href="@{/css/topbar-motion.css}">
 	<script th:src="@{/js/topbar-motion.js}" defer></script>
 </head>
 <body>
@@ -16,13 +17,13 @@
 			<img class="brand-mark" th:src="@{/img/logo-white.svg}" alt="">
 			<span class="brand-text">
 				<span class="brand-eyebrow">세종대학교 컴퓨터공학과</span>
-				<span class="brand-name">CCTV 동의서 관리</span>
+				<span class="brand-name" th:text="#{admin.title}">CCTV 동의서 관리</span>
 			</span>
 		</a>
 		<nav aria-label="관리자 메뉴">
-			<a th:href="@{/admin}" th:attr="aria-current=${active == 'dashboard'} ? 'page'">학기 현황</a>
-			<a th:href="@{/admin/roster}" th:attr="aria-current=${active == 'roster'} ? 'page'">명부 업로드</a>
-			<a th:href="@{/admin/login-locks}" th:attr="aria-current=${active == 'login-locks'} ? 'page'">로그인 제한</a>
+			<!--/* 탭 목록은 AdminTab.ALL 하나를 로그인 화면의 고스트, SecurityConfig와 같이 쓴다 */-->
+			<a th:each="tab : ${adminTabs}" th:href="@{${tab.path}}" th:attr="aria-current=${active == tab.id} ? 'page'"
+			   th:text="${tab.label}">학기 현황</a>
 			<span class="nav-divider" aria-hidden="true"></span>
 			<form th:action="@{/logout}" method="post">
 				<!--/* 로그아웃 뒤 로그인 화면에서 이 탭 알약이 언어 버튼으로 바뀌는 움직임에 쓴다(SecurityConfig.LoggedOutNoticeHandler) */-->
@@ -39,11 +40,11 @@
 			</form>
 		</nav>
 	</div>
-	<!--/* 로그인 직후 한 번: 로그인 화면 상단 바의 언어 버튼을 그 자리(가운데 폭 1072px)에 그려 둔다.
+	<!--/* 로그인 직후 한 번: 로그인 화면 상단 바의 언어 버튼을 그 자리(topbar-motion.css의 --topbar-student-max)에 그려 둔다.
 		topbar-motion.js가 이 알약을 지금 보고 있는 탭 자리로 옮긴다 */-->
 	<div class="topbar-ghost" aria-hidden="true" th:if="${adminSignedIn}" th:attr="data-brand-from=#{app.title}">
 		<div class="ghost-inner">
-			<span class="ghost-pill"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span th:text="#{language.switch.short}">EN</span></span>
+			<span class="ghost-pill"><svg th:replace="~{student/fragments :: globeIcon}"></svg><span th:text="#{language.switch.short}">EN</span></span>
 		</div>
 	</div>
 </header>

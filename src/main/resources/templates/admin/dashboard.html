@@ -42,7 +42,7 @@
 			<div class="card-head">
 				<h2>강의실별 제출률</h2>
 				<span class="muted small tabular"
-					  th:text="|전체 *{rate}% · *{submitted}/*{total}건 · 미제출 학생 *{progress.pending()}명|">전체 21% · 412/1914건 · 미제출 학생 830명</span>
+					  th:text="|전체 *{rate}% · *{submitted}/*{total}건 · 미제출 학생 *{pendingStudents}명|">전체 21% · 412/1914건 · 미제출 학생 830명</span>
 			</div>
 			<!--/* 강의실 하나가 타일 하나. 누르면 그 강의실 시간표로 간다 */-->
 			<ul class="room-tiles">
