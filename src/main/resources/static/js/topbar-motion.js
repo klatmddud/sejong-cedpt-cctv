@@ -10,11 +10,18 @@
 		const parent = brand.offsetParent;
 		return brand.offsetLeft + (parent ? parent.getBoundingClientRect().left : 0);
 	};
+	// 좁은 화면에서는 관리자 상단 바의 탭 묶음이 로고 아래 둘째 줄로 내려간다(flex-wrap)
+	const navWrapped = (brand, nav) => nav.getBoundingClientRect().top >= brand.getBoundingClientRect().bottom - 1;
 	addEventListener('pagehide', () => {
 		const brand = document.querySelector('.topbar .brand');
+		const nav = document.querySelector('.topbar nav');
 		try {
 			if (brand) {
-				sessionStorage.setItem(KEY, JSON.stringify({ x: brandLeft(brand), at: Date.now() }));
+				sessionStorage.setItem(KEY, JSON.stringify({
+					x: brandLeft(brand),
+					wrapped: nav ? navWrapped(brand, nav) : false,
+					at: Date.now()
+				}));
 			}
 		}
 		catch (e) {
@@ -27,10 +34,14 @@
 	if (!ghost || !ghost.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 		return;
 	}
+	let saved = null;
 	try {
-		const saved = JSON.parse(sessionStorage.getItem(KEY) || 'null');
+		saved = JSON.parse(sessionStorage.getItem(KEY) || 'null');
+		if (saved && Date.now() - saved.at >= 10000) {
+			saved = null;
+		}
 		const brand = bar.querySelector('.brand');
-		if (saved && brand && Date.now() - saved.at < 10000) {
+		if (saved && brand) {
 			bar.style.setProperty('--brand-from', (saved.x - brandLeft(brand)) + 'px');
 		}
 	}
@@ -137,6 +148,23 @@
 	const from = ghost.querySelector(toAdmin ? '.ghost-pill' : '.ghost-tab.current');
 	const to = bar.querySelector(toAdmin ? 'nav a[aria-current]' : '.lang-switch');
 	if (!from || !to) {
+		catchUp();
+		return;
+	}
+	// 관리자 탭이 두 줄로 내려가는 좁은 화면에서는 이전 화면의 알약 자리를 한 줄 배치로 그린 고스트와 맞출 수 없다.
+	// 알약 날리기는 건너뛰고(출발 알약을 치운다), 로고와 앱 이름 움직임, 탭 나타나기만 한다
+	const brand = bar.querySelector('.brand');
+	const nav = bar.querySelector('nav');
+	const ghostRow = ghost.querySelector('.ghost-inner');
+	const narrow = toAdmin
+		? !!(brand && nav && navWrapped(brand, nav))
+		: (saved ? saved.wrapped === true : !!ghostRow && ghostRow.scrollWidth > ghostRow.clientWidth + 1);
+	if (narrow) {
+		ghost.remove();
+		if (toAdmin) {
+			// 날아올 알약이 없으니 지금 탭 표시를 기다리지 않고 바로 보인다
+			to.style.animation = 'none';
+		}
 		catchUp();
 		return;
 	}
