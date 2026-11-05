@@ -533,6 +533,16 @@ class StudentConsentFlowTest extends PostgresTestSupport {
 	}
 
 	@Test
+	void pageTransitionScriptGetsBothScreenPaths() throws Exception {
+		// 언어 선택과 로그인 화면만 화면 전환 스크립트를 싣고, 전환을 유지할 두 주소를 서버가 적어 준다
+		String expected = "data-home=\"/\" data-login=\"/login\"";
+		mvc.perform(get("/login")).andExpect(content().string(Matchers.containsString(expected)));
+		mvc.perform(get("/")).andExpect(content().string(Matchers.containsString(expected)));
+		mvc.perform(get("/consents").with(student(STUDENT)))
+				.andExpect(content().string(Matchers.not(Matchers.containsString("page-transition"))));
+	}
+
+	@Test
 	void logoutNoticeShowsOnlyOnce() throws Exception {
 		MockHttpSession session = (MockHttpSession) mvc
 				.perform(post("/logout").with(csrf()).with(student(STUDENT)))

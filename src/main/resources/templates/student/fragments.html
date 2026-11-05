@@ -14,7 +14,8 @@
 	<link rel="stylesheet" th:href="@{/css/topbar-motion.css}">
 	<script th:src="@{/js/topbar-motion.js}" defer></script>
 	<style th:if="${pageTransition}">@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
-	<script th:if="${pageTransition}" th:src="@{/js/page-transition.js}" defer></script>
+	<!--/* 전환을 유지할 두 화면 주소. context path가 붙은 실제 주소를 넘긴다 */-->
+	<script th:if="${pageTransition}" th:src="@{/js/page-transition.js}" th:data-home="@{/}" th:data-login="@{/login}" defer></script>
 </head>
 <body>
 <!--/* 서비스 로고(렌즈 체크). 빨간 상단 바에는 흰색(logo-white.svg), 밝은 바탕에는 빨간색(logo.svg)을 넘긴다.
