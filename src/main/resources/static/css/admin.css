@@ -235,13 +235,15 @@ img.brand-mark {
 	font-weight: 600;
 	text-decoration: none;
 	cursor: pointer;
-	transition: background-color 0.15s ease, color 0.15s ease;
 }
 
+/* 전환은 hover에만 둔다. 기본 규칙에 두면 이 CSS가 도착하기 전에 스타일이 한 번 계산됐을 때
+   기본 링크색(파랑)에서 전환이 시작되고, topbar-motion.js가 그 전환 중인 색을 날아가는 알약 글자에 쓴다 */
 .topbar nav a:not([aria-current]):hover,
 .nav-button:hover {
 	background: rgba(255, 255, 255, 0.14);
 	color: #fff;
+	transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .topbar nav a[aria-current] {
