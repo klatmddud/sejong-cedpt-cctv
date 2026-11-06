@@ -7,7 +7,7 @@
 세종대학교 컴퓨터공학과 실습실 수업 수강생에게<br>
 CCTV 촬영 및 이용 동의서를 받는 웹 서비스입니다.
 
-[![Build and Deploy](https://github.com/klatmddud/sejong-cedpt-cctv-consent/actions/workflows/deploy.yml/badge.svg)](https://github.com/klatmddud/sejong-cedpt-cctv-consent/actions/workflows/deploy.yml)
+[![Build and Deploy](https://github.com/klatmddud/sejong-cedpt-cctv/actions/workflows/deploy.yml/badge.svg)](https://github.com/klatmddud/sejong-cedpt-cctv/actions/workflows/deploy.yml)
 ![Java 25](https://img.shields.io/badge/Java-25-007396)
 ![Spring Boot 4.1](https://img.shields.io/badge/Spring%20Boot-4.1-6DB33F)
 ![PostgreSQL 17](https://img.shields.io/badge/PostgreSQL-17-4169E1)

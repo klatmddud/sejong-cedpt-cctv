@@ -27,7 +27,7 @@ flowchart LR
 | 컨테이너 | 이미지 | 역할 |
 |---|---|---|
 | `caddy` | `caddy:2` | 80/443 공개, Let's Encrypt 인증서 자동 발급, `cctv-consent:8080`으로 프록시 |
-| `cctv-consent` | `ghcr.io/klatmddud/sejong-cedpt-cctv-consent` | 앱. 외부 포트 없음. GitHub Actions가 `main` push마다 교체. 감사 로그는 `cctv_app_logs` volume |
+| `cctv-consent` | `ghcr.io/klatmddud/sejong-cedpt-cctv` | 앱. 외부 포트 없음. GitHub Actions가 `main` push마다 교체. 감사 로그는 `cctv_app_logs` volume |
 | `cctv-db` | `postgres:17` | DB. 외부 포트 없음. 데이터는 `cctv_db_data` volume |
 
 ### 비밀 값
